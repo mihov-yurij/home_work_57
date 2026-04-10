@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Saver</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        input, textarea { display: block; margin-bottom: 10px; width: 300px; }
+    </style>
+</head>
+<body>
+    <h2>Сохранить файл через браузер</h2>
+    <input type="text" id="fileName" placeholder="Имя файла (например, web.txt)">
+    <textarea id="fileContent" placeholder="Текст файла..."></textarea>
+    <button onclick="saveFile()">Отправить на сервер</button>
+
+    <p id="status"></p>
+
+    <script>
+        async function saveFile() {
+            const filename = document.getElementById('fileName').value;
+            const content = document.getElementById('fileContent').value;
+            const status = document.getElementById('status');
+
+            const response = await fetch('/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename, content })
+            });
+
+            const result = await response.json();
+            status.innerText = result.message || result.error;
+        }
+    </script>
+</body>
+</html>
