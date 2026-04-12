@@ -1,5 +1,6 @@
-import { writeFileAsync, readFileAsync, deleteFileAsync } from './utils.js';
-import { writeFile, readFile, unlink } from 'node:fs/promises';
+const { writeFileAsync, readFileAsync, deleteFileAsync } = require('./utils.js');
+const { writeFile, readFile, unlink } = require('node:fs/promises');
+
 
 // Мокаем модуль fs/promises
 jest.mock('node:fs/promises');

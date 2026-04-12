@@ -5,7 +5,7 @@
   "main": "js/main.js",
   "scripts": {
     "test": "jest",
-    "start": "node js/main.js"
+    "start": "node server.js"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
