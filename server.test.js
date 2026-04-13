@@ -1,12 +1,9 @@
 const request = require('supertest');
 const http = require('http');
-// Импортируем вашу логику сервера. 
-// Примечание: для тестов лучше экспортировать объект server из server.js
 const server = require('./server.js'); 
 
-describe('HTTP Server API Homework Tests', () => {
+describe('HTTP Server API Homework Tests', () => {    
     
-    // Тест GET маршрутов (Требование №2)
     test('GET / should return Home page', async () => {
         const res = await request(server).get('/');
         expect(res.statusCode).toBe(200);
@@ -25,16 +22,14 @@ describe('HTTP Server API Homework Tests', () => {
         expect(res.statusCode).toBe(404);
         expect(res.text).toContain('Page Not Found');
     });
-
-    // Тест заголовков (Требование №4)
+    
     test('Response should have security headers', async () => {
         const res = await request(server).get('/');
         expect(res.headers['x-content-type-options']).toBe('nosniff');
         expect(res.headers['content-length']).toBeDefined();
     });
 
-    // Тест POST маршрута и валидации (Требование №3 и №5)
-    test('POST /submit should process form data', async () => {
+        test('POST /submit should process form data', async () => {
         const res = await request(server)
             .post('/submit')
             .send('name=Yuriy&email=test@example.com')
@@ -48,25 +43,24 @@ describe('HTTP Server API Homework Tests', () => {
     test('POST /submit should return 400 for invalid data', async () => {
         const res = await request(server)
             .post('/submit')
-            .send('name=&email=') // Пустые поля
+            .send('name=&email=') 
             .set('Content-Type', 'application/x-www-form-urlencoded');
 
         expect(res.statusCode).toBe(400);
         expect(res.text).toContain('Invalid form data');
     });
 
-    // Тест безопасности: XSS (Требование №5)
-    test('POST /submit should sanitize XSS', async () => {
+        test('POST /submit should sanitize XSS', async () => {
         const res = await request(server)
             .post('/submit')
             .send('name=<script>alert(1)</script>&email=hacker@test.com')
             .set('Content-Type', 'application/x-www-form-urlencoded');
 
         expect(res.text).not.toContain('<script>');
-        expect(res.text).toContain('&lt;script&gt;'); // Ожидаем замену символов
+        expect(res.text).toContain('&lt;script&gt;'); 
     });
 
-    // Тест лимита размера (Требование №5)
+    
     test('POST /submit should return 413 for large payload', async () => {
         const largeData = 'name=' + 'a'.repeat(1024 * 1025); // Больше 1МБ
         const res = await request(server)
@@ -76,8 +70,15 @@ describe('HTTP Server API Homework Tests', () => {
 
         expect(res.statusCode).toBe(413);
     });
-    afterAll((done) => {
-    server.close(done); // Останавливаем сервер после всех тестов
+   afterAll((done) => {
+    if (server && server.close) {
+        server.close(() => {
+            done();
+        });
+    } else {
+        done();
+    }
 });
+
 
 });
