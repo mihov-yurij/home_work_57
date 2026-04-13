@@ -59,5 +59,12 @@ function send(res, statusCode, html) {
     res.end(buffer);
 }
 
-server.listen(PORT, () => console.log(`🚀 Server: http://localhost:${PORT}`));
+
+if (require.main === module) {
+    server.listen(PORT, () => {
+        console.log(`🚀 Сервер запущен: http://localhost:${PORT}`);
+    });
+}
+
+module.exports = server;
 
