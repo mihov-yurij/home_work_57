@@ -5,7 +5,7 @@ const { generateHTML, sanitize } = require('./js/utils.js');
 const PORT = process.env.PORT || 3000;
 const MAX_BODY_SIZE = 1024 * 1024; 
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => { 
     const { method, url } = req;
 
    
@@ -14,12 +14,40 @@ const server = http.createServer((req, res) => {
 
     try {
      
+              // GET запити (Вимога №2)
         if (method === 'GET') {
-            if (url === '/') return send(res, 200, generateHTML('Home', 'Welcome to the Home Page'));
-            if (url === '/about') return send(res, 200, generateHTML('About', 'Learn more about us'));
-            if (url === '/contact') return send(res, 200, generateHTML('Contact', 'Get in touch'));
-            return send(res, 404, generateHTML('Page Not Found', 'The requested page was not found.'));
+            if (url === '/') {
+                return send(res, 200, generateHTML('Головна', 'Вітаємо на головній сторінці нашого сервера!'));
+            }
+            
+            if (url === '/about') {
+                return send(res, 200, generateHTML('Про нас', 'Цей проект створений для демонстрації навичок роботи з Node.js.'));
+            }
+            
+            if (url === '/contact') {
+                return send(res, 200, generateHTML('Контакти', 'Зв’яжіться з нами через форму на сторінці /form або за імейлом.'));
+            }
+
+            // Маршрут для вашої HTML-форми (index.html)
+            if (url === '/form') {
+                try {
+                    const { readFile } = require('node:fs/promises');
+                    const path = require('node:path');
+                    // Читаємо ваш файл index.html
+                    const formHtml = await readFile(path.join(__dirname, 'index.html'), 'utf8');
+                    
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+                    return res.end(formHtml);
+                } catch (err) {
+                    return send(res, 500, generateHTML('Помилка', 'Не вдалося завантажити файл форми.'));
+                }
+            }
+
+            
+            return send(res, 404, generateHTML('404 - Не знайдено', 'На жаль, такої сторінки не існує.'));
         }
+
 
        
         if (method === 'POST' && url === '/submit') {
